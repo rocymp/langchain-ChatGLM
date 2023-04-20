@@ -30,3 +30,5 @@ USE_PTUNING_V2 = False
 # LLM running device
 LLM_DEVICE = "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
 
+# lora models path
+LORA_MODEL_PATH=""

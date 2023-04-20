@@ -3,8 +3,9 @@ from langchain.llms.base import LLM
 from typing import Optional, List
 from langchain.llms.utils import enforce_stop_tokens
 from transformers import AutoTokenizer, AutoModel, AutoConfig
+from peft import PeftModel
 import torch
-from configs.model_config import LLM_DEVICE
+from configs.model_config import LLM_DEVICE,LORA_MODEL_PATH
 
 DEVICE = LLM_DEVICE
 DEVICE_ID = "0" if torch.cuda.is_available() else None
@@ -53,7 +54,8 @@ class ChatGLM(LLM):
     def load_model(self,
                    model_name_or_path: str = "THUDM/chatglm-6b",
                    llm_device=LLM_DEVICE,
-                   use_ptuning_v2=False):
+                   use_ptuning_v2=False,
+                   lora_model_path=LORA_MODEL_PATH):
         self.tokenizer = AutoTokenizer.from_pretrained(
             model_name_or_path,
             trust_remote_code=True
@@ -102,4 +104,6 @@ class ChatGLM(LLM):
             except Exception:
                 print("加载PrefixEncoder模型参数失败")
 
+        if not (lora_model_path == '' or lora_model_path == None):
+            model = PeftModel.from_pretrained(model, lora_model_path)
         self.model = self.model.eval()
